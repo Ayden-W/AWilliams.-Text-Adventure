@@ -61,10 +61,10 @@ You can also use these shortcuts for commands:
         public static int[] MonthsWith31Days = { 1, 3, 5, 7, 8, 10, 12 };
         public static int[] MonthsWith30Days = { 4, 6, 9, 11 };
         public static int[] MonthsWith28Days = { 2 };
-        public static string[] NameOfMonth = {"fake", "January", "February", "March", "April", "May", "June", "July",
-"August", "September", "October", "November", "December"};
+        public static string[] NameOfMonth = {"fake", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
-        string monthName = NameOfMonth[1];
+        public static string monthName = NameOfMonth[monthNumber];
+        public static int monthNumber = 0;
 
         /*Converts are numeric date into a string.
         input: m - a month in the range 1-12
@@ -72,14 +72,14 @@ You can also use these shortcuts for commands:
         output: a string like "December 24".
         Note: this function does not enforce calendar rules. It's happy to output
         impossible strings like "June 95" or "February 31"*/
-       
+
 
 
         public static void DateReport()
         {
-            string monthName = NameOfMonth[1];
+            
             // month, day;
-            Console.WriteLine(monthName + " " + Day + MilesTravled);
+            Console.WriteLine(monthName + Day + " \n" + MilesTravled);
         }
         public static void MilesRemaining()
         {
@@ -132,9 +132,14 @@ You can also use these shortcuts for commands:
                 string sickness = TypesOfSicknesses[activeSickness];
 
                 SicknessesSufferedThisMonth++;
+
+                return true;
             }
 
-            return true;
+            else 
+            {
+                return false;
+            }
         }
 
         public static void consumeFood()
@@ -159,9 +164,11 @@ You can also use these shortcuts for commands:
         {
             if (DaysInMonth(Month) < Day)
             {
-                Month = Month + 1;
+                monthNumber =+ 1;
+
                 Day = 1;
             }
+
         }
 
 
@@ -181,7 +188,7 @@ You can also use these shortcuts for commands:
                 Day += 1;
                 MaybeRollBack();
                 consumeFood();
-                Console.WriteLine(foodRemaning.ToString() + "lbs of food remaining ");
+                
                 if (RandomSicknessOccurs())
                 {
                     Console.WriteLine("sickness occured");
@@ -198,10 +205,13 @@ You can also use these shortcuts for commands:
             Random random = new Random();
 
             int RandomMilesTravled = random.Next(MinMilesPerTravel, MaxMilesPerTravel);
-            Console.WriteLine(Day.ToString(), Month, MilesTravled);
+            
             int DaysTravled = +random.Next(MinDaysPerTravel, MaxDaysPerTravel);
-            AdvanceGameClock(DaysTravled);
             MilesTravled += RandomMilesTravled;
+            Console.WriteLine(monthName + " " + Day.ToString() + "\n" + MilesTravled +" Miles travled");
+            AdvanceGameClock(DaysTravled);
+            Console.WriteLine(foodRemaning.ToString() + "lbs of food remaining ");
+
         }
 
 
@@ -212,7 +222,7 @@ You can also use these shortcuts for commands:
             int DaysRested = random.Next(MinDaysPerRest, MaxDaysPerRest);
             HealthLevel += 1;
             AdvanceGameClock(DaysRested);
-            Console.WriteLine(Day.ToString(), Month, MilesTravled);
+            Console.WriteLine(Day.ToString()+ Month+ MilesTravled);
             if (HealthLevel > 5)
             {
                 HealthLevel = 5;
@@ -225,22 +235,23 @@ You can also use these shortcuts for commands:
             int CoinFlip = random.Next(0, 50);
             int DaysHunted = random.Next(MinDaysPerHunt, MaxDaysPerHunt);
             AdvanceGameClock(DaysHunted);
-            if (CoinFlip <= 50)
+            if (CoinFlip <= 6)
             {
                 HealthLevel += -1;
-                Console.WriteLine("Your Hunt Came up Empty. Tonight you will be Cold and hungrey. -1HP" + HealthLevel);
+                Console.WriteLine("Your Hunt Came up Empty. Tonight you will be Cold and hungrey. -1HP\n" + HealthLevel);
             }
             else
             {
                 foodRemaning += 50;
-                Console.WriteLine("The Hunt was Very lucritive" + foodRemaning);
+                Console.WriteLine("The Hunt was Very lucritive\n" + foodRemaning);
             }
 
         }
 
         public static void HandleStatus()
         {
-            Console.WriteLine(DateReport);
+            Console.WriteLine(monthName + " " + Day.ToString() + "\n" + MilesTravled + " Miles travled");
+            Console.WriteLine(HealthLevel);
         }
 
         public static void HandleHelp()
@@ -253,15 +264,21 @@ You can also use these shortcuts for commands:
             Playing = false;
         }
 
+       
+        //Game ending functions
         public static bool GameOver()
         {
-            if (HealthLevel >= 0)
+            if (HealthLevel == 0)
             {
                 return true;
             }
-            else if (foodRemaning == 0)
+            else if (foodRemaning <= 0)
             {
+                Console.WriteLine("\nYou Ran out of food and decided to eat the Horse\nLeaving you stranded and unable to return to your home or coninue to Oregon. \nGame Over");
                 return true;
+                
+
+
             }
             else if (playerWins())
             {
@@ -272,6 +289,8 @@ You can also use these shortcuts for commands:
                 return false;
             }
         }
+       
+        //player wins when they reach 2000 Miles Traveled
         public static bool playerWins()
         {
             if (MilesTravled >= 2000)
@@ -284,29 +303,35 @@ You can also use these shortcuts for commands:
                 return false;
             }
         }
-        public static string LossReport()
+        public static bool LossReport()
         {
             if (HealthLevel <= 0)
             {
-                return "\nYou Died";
+                return true ;
+                    Console.WriteLine("\nYou Died");
+
             }
-            if (foodRemaning <= 0)
+            if (foodRemaning == 0)
             {
-                return "\nYou Ran out of food and decided to eat the Horse\nLeaving you stranded and unable to return to your home or coninue to Oregon. \nGame Over";
-            }
-            if (Month == 12)
+                return true; 
+                   Console.WriteLine( "\nYou Ran out of food and decided to eat the Horse\nLeaving you stranded and unable to return to your home or coninue to Oregon. \nGame Over");
+           
+           }
+            if (monthNumber == 12)
             {
-                return "\nWinter Has arrived causing animals to go into hybernation and leave you stranded unable to move your cart. \n You and your family freeze to death slowly and painfully.";
+                return true;
+                Console.WriteLine("\nWinter Has arrived causing animals to go into hybernation and leave you stranded unable to move your cart. \n You and your family freeze to death slowly and painfully.");
             }
             else
             {
-                return " ";
+                return true;
+                
             }
         }
 
         //Main input output and other ways for the player to interact with the game.
 
-         public static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Console.WriteLine(" Welcome to the Oregon Trail!\nThe year is 1850 and Americans are headed out West to populate the frontier.\nYour goal is to travel by wagon train from Independence, MO to Oregon(2000 miles). You start on March 1st,\nand your goal is to reach Oregon by December 31st.\nThe trail is arduous.\nEach day costs you food and health.You can hunt and rest,\nbut you have to get there before winter!");
             Console.WriteLine(helpText);
@@ -322,7 +347,7 @@ You can also use these shortcuts for commands:
                 {
                     Travel();
                 }
-                else if (Action == "rest")
+                else if (Action == "rest" || Action == "r")
                 {
                     HandleRest();
                 }
@@ -347,6 +372,24 @@ You can also use these shortcuts for commands:
                     Console.WriteLine("You have miss spelled something try again");
 
                 }
+                if (GameOver() == true)
+                {
+                    Playing = false;
+                    if (playerWins() == true)
+                    {
+                        HandleStatus();
+                        Playing = false;
+                    }
+                    else 
+                    { 
+                    LossReport();
+                    }
+                    if (Month >= 12)
+                    {
+                        LossReport();
+                    }
+                }
+
             }
 
         }
