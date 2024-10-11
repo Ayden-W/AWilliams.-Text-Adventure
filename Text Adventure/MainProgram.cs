@@ -18,7 +18,7 @@ Travel - moves you randomly between 30-60 miles and takes 3-7 days(random).
 
 Rest - increases health 1 level(up to 5 maximum) and takes 2-5 days(random).
 
-Hunt - adds 100 lbs of food and takes 2-5 days(random).
+Hunt - adds 150 lbs of food and takes 2-5 days(random).
 
 When prompted for an action, you can also enter one of these
 commands without using up your turn:
@@ -41,7 +41,7 @@ You can also use these shortcuts for commands:
         public static int SicknessesSufferedThisMonth = 0;
         public static string PlayerName = " ";
         public static bool Playing = true;
-
+        public static string sickness;
         //parameters that define the rules of the game cant change
 
         public static int MinMilesPerTravel = 30;
@@ -52,20 +52,20 @@ You can also use these shortcuts for commands:
         public static int MaxDaysPerRest = 5;
         public static int HealthChangePerRest = 1;
         public static int MaxHealth = 5;
-        public static int FoodPerHunt = 100;
+        public static int FoodPerHunt = 150;
         public static int MinDaysPerHunt = 2;
         public static int MaxDaysPerHunt = 5;
         public static int FoodEatenPerDay = 5;
         public static string[] TypesOfSicknesses = { "Typhoid fever", "Cholera", "Dysentery", "Diphtheria", "Measles" };
-        public static int MilesBetweenNYCAndOREGON = 2000;
+        public static int MilesBetweenNYCAndOREGON = 1700;
         public static int[] MonthsWith31Days = { 1, 3, 5, 7, 8, 10, 12 };
         public static int[] MonthsWith30Days = { 4, 6, 9, 11 };
         public static int[] MonthsWith28Days = { 2 };
         public static string[] NameOfMonth = {"fake", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
+        
+        public static int monthNumber = 1;
         public static string monthName = NameOfMonth[monthNumber];
-        public static int monthNumber = 0;
-
         /*Converts are numeric date into a string.
         input: m - a month in the range 1-12
         input: d - a day in the range 1-31
@@ -127,9 +127,9 @@ You can also use these shortcuts for commands:
             //Generate random number between 1 and 32
             //if number is less than 4 you get sick
             int Chance = random.Next(1, 32) - 1;
-            if (Chance <= 4)
+            if (Chance <= 2)
             {
-                string sickness = TypesOfSicknesses[activeSickness];
+                sickness = TypesOfSicknesses[activeSickness];
 
                 SicknessesSufferedThisMonth++;
 
@@ -163,9 +163,11 @@ You can also use these shortcuts for commands:
         public static void MaybeRollBack()
         {
             if (DaysInMonth(Month) < Day)
-            {
-                monthNumber =+ 1;
 
+            {
+                monthNumber =monthNumber+ 1;
+                
+                monthName = NameOfMonth[monthNumber];
                 Day = 1;
             }
 
@@ -185,15 +187,15 @@ You can also use these shortcuts for commands:
         {
             for (int i = 0; i < DaysPassed; ++i)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Day += 1;
                 MaybeRollBack();
                 consumeFood();
                 
                 if (RandomSicknessOccurs())
                 {
-                    Console.WriteLine("sickness occured");
-                    i -= 1;
-                    consumeFood();
+                    Console.WriteLine("sickness occured"+ " " + sickness, Console.ForegroundColor);
+                    break;
                 }
             }
         }
@@ -202,27 +204,29 @@ You can also use these shortcuts for commands:
 
         public static void Travel()
         {
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
             Random random = new Random();
 
             int RandomMilesTravled = random.Next(MinMilesPerTravel, MaxMilesPerTravel);
             
             int DaysTravled = +random.Next(MinDaysPerTravel, MaxDaysPerTravel);
             MilesTravled += RandomMilesTravled;
-            Console.WriteLine(monthName + " " + Day.ToString() + "\n" + MilesTravled +" Miles travled");
+            Console.WriteLine(monthName + " " + Day.ToString() + "\n" + MilesTravled +" Miles travled",Console.ForegroundColor);
             AdvanceGameClock(DaysTravled);
-            Console.WriteLine(foodRemaning.ToString() + "lbs of food remaining ");
+            Console.WriteLine(foodRemaning.ToString() + " lbs of food remaining ");
 
         }
 
 
         public static void HandleRest()
         {
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Random random = new Random();
-            Console.WriteLine("rest");
+            Console.WriteLine("Rest",Console.ForegroundColor);
             int DaysRested = random.Next(MinDaysPerRest, MaxDaysPerRest);
             HealthLevel += 1;
             AdvanceGameClock(DaysRested);
-            Console.WriteLine(Day.ToString()+ Month+ MilesTravled);
+            Console.WriteLine(Day.ToString()+" " + NameOfMonth[monthNumber] + " " + MilesTravled);
             if (HealthLevel > 5)
             {
                 HealthLevel = 5;
@@ -238,11 +242,11 @@ You can also use these shortcuts for commands:
             if (CoinFlip <= 6)
             {
                 HealthLevel += -1;
-                Console.WriteLine("Your Hunt Came up Empty. Tonight you will be Cold and hungrey. -1HP\n" + HealthLevel);
+                Console.WriteLine("Your Hunt Came up Empty. Tonight you will be Cold and hungrey. -1HP\n" + HealthLevel +"Hp Remaining");
             }
             else
             {
-                foodRemaning += 50;
+                foodRemaning += FoodPerHunt;
                 Console.WriteLine("The Hunt was Very lucritive\n" + foodRemaning);
             }
 
@@ -333,8 +337,9 @@ You can also use these shortcuts for commands:
 
         public static void Main(string[] args)
         {
-            Console.WriteLine(" Welcome to the Oregon Trail!\nThe year is 1850 and Americans are headed out West to populate the frontier.\nYour goal is to travel by wagon train from Independence, MO to Oregon(2000 miles). You start on March 1st,\nand your goal is to reach Oregon by December 31st.\nThe trail is arduous.\nEach day costs you food and health.You can hunt and rest,\nbut you have to get there before winter!");
-            Console.WriteLine(helpText);
+            Console.WriteLine(" Welcome to the Oregon Trail!\nThe year is 1850 and Americans are headed out West to populate the frontier.\nYour goal is to travel by wagon train from Independence, Montana to Oregon(2000 miles). You start on March 1st,\nand your goal is to reach Oregon by December 31st.\nThe trail is arduous.\nEach day costs you food and health.You can hunt and rest,\nbut you have to get there before winter!");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(helpText, Console.ForegroundColor);
             Console.WriteLine(value: RandomSicknessOccurs());
 
             while (Playing == true)
@@ -361,7 +366,8 @@ You can also use these shortcuts for commands:
                 }
                 else if (Action == "help" || Action == "?")
                 {
-                    Console.WriteLine(helpText);
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine(helpText,Console.ForegroundColor);
                 }
                 else if (Action == "status" || Action == "s")
                 {
@@ -369,7 +375,8 @@ You can also use these shortcuts for commands:
                 }
                 else
                 {
-                    Console.WriteLine("You have miss spelled something try again");
+                    Console.ForegroundColor= ConsoleColor.DarkRed;
+                    Console.WriteLine("You have misspelled something try again.", Console.ForegroundColor);
 
                 }
                 if (GameOver() == true)
@@ -386,7 +393,8 @@ You can also use these shortcuts for commands:
                     }
                     if (Month >= 12)
                     {
-                        LossReport();
+                        Console.WriteLine("\nWinter Has arrived causing animals to go into hybernation and leave you stranded unable to move your cart. \n You and your family freeze to death slowly and painfully.");
+                        Playing = false;
                     }
                 }
 
