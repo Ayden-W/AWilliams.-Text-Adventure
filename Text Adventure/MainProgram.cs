@@ -32,11 +32,27 @@ Quit - will end the game.
 You can also use these shortcuts for commands:
 | t | r | h | s | ? | q |
 """;
+        public enum Months
+        {
+            January = 1, 
+            February, 
+            March, 
+            April, 
+            May, 
+            June, 
+            July, 
+            August, 
+            September, 
+            October, 
+            November, 
+            December
+        }
+
         //state of the game
         public static int MilesTravled = 0;
         public static int foodRemaning = 500;
         public static int HealthLevel = 5;
-        public static int Month = 3;
+        public static Months Month = Months.March;
         public static int Day = 1;
         public static int SicknessesSufferedThisMonth = 0;
         public static string PlayerName = " ";
@@ -56,16 +72,15 @@ You can also use these shortcuts for commands:
         public static int MinDaysPerHunt = 2;
         public static int MaxDaysPerHunt = 5;
         public static int FoodEatenPerDay = 5;
-        public static string[] TypesOfSicknesses = { "Typhoid fever", "Cholera", "Dysentery", "Diphtheria", "Measles" };
+        public static string[] TypesOfSicknesses = ["Typhoid fever", "Cholera", "Dysentery", "Diphtheria", "Measles"];
         public static int MilesBetweenNYCAndOREGON = 1700;
-        public static int[] MonthsWith31Days = { 1, 3, 5, 7, 8, 10, 12 };
-        public static int[] MonthsWith30Days = { 4, 6, 9, 11 };
-        public static int[] MonthsWith28Days = { 2 };
-        public static string[] NameOfMonth = {"fake", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+        public static Months[] MonthsWith31Days = [Months.January, Months.March, Months.May, Months.July, Months.August, Months.October, Months.December];
+        public static Months[] MonthsWith28Days = [Months.February];
+        public static Months[] MonthsWith30Days = [Months.April, Months.June, Months.September, Months.November];
 
         
-        public static int monthNumber = 1;
-        public static string monthName = NameOfMonth[monthNumber];
+        public static Months CurrentMonth = Months.January;
+        public static string monthName = CurrentMonth.ToString();
         /*Converts are numeric date into a string.
         input: m - a month in the range 1-12
         input: d - a day in the range 1-31
@@ -90,7 +105,7 @@ You can also use these shortcuts for commands:
         input: an integer from 1 to 12. 1=January, 2=February, etc.
         output: the number of days in the month. If the input is not in
         the required range, returns 0.*/
-        public static int DaysInMonth(int m)
+        public static int DaysInMonth(Months m)
         {
             if (MonthsWith31Days.Contains(m))
             {
@@ -165,9 +180,9 @@ You can also use these shortcuts for commands:
             if (DaysInMonth(Month) < Day)
 
             {
-                monthNumber =monthNumber+ 1;
+                CurrentMonth =CurrentMonth+ 1;
                 
-                monthName = NameOfMonth[monthNumber];
+                monthName = CurrentMonth.ToString();
                 Day = 1;
             }
 
@@ -226,7 +241,7 @@ You can also use these shortcuts for commands:
             int DaysRested = random.Next(MinDaysPerRest, MaxDaysPerRest);
             HealthLevel += 1;
             AdvanceGameClock(DaysRested);
-            Console.WriteLine(Day.ToString()+" " + NameOfMonth[monthNumber] + " " + MilesTravled);
+            Console.WriteLine(Day.ToString()+" " + CurrentMonth.ToString(),Console.ForegroundColor + " " + MilesTravled);
             if (HealthLevel > 5)
             {
                 HealthLevel = 5;
@@ -311,21 +326,22 @@ You can also use these shortcuts for commands:
         {
             if (HealthLevel <= 0)
             {
-                return true ;
                     Console.WriteLine("\nYou Died");
+                return true ;
 
             }
             if (foodRemaning == 0)
             {
-                return true; 
                    Console.WriteLine( "\nYou Ran out of food and decided to eat the Horse\nLeaving you stranded and unable to return to your home or coninue to Oregon. \nGame Over");
+                return true; 
            
            }
-            if (monthNumber == 12)
+            if (CurrentMonth == Months.December)
             {
-                return true;
                 Console.WriteLine("\nWinter Has arrived causing animals to go into hybernation and leave you stranded unable to move your cart. \n You and your family freeze to death slowly and painfully.");
+                return true;
             }
+
             else
             {
                 return true;
@@ -391,7 +407,7 @@ You can also use these shortcuts for commands:
                     { 
                     LossReport();
                     }
-                    if (Month >= 12)
+                    if (Month >= Months.December)
                     {
                         Console.WriteLine("\nWinter Has arrived causing animals to go into hybernation and leave you stranded unable to move your cart. \n You and your family freeze to death slowly and painfully.");
                         Playing = false;
