@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
+using static Text_Adventure.MainProgram;
 namespace Text_Adventure
 {
     internal class MainProgram
@@ -77,24 +78,33 @@ You can also use these shortcuts for commands:
         public static Months[] MonthsWith31Days = [Months.January, Months.March, Months.May, Months.July, Months.August, Months.October, Months.December];
         public static Months[] MonthsWith28Days = [Months.February];
         public static Months[] MonthsWith30Days = [Months.April, Months.June, Months.September, Months.November];
-
         
-        public static Months CurrentMonth = Months.January;
-        public static string monthName = CurrentMonth.ToString();
+        
         /*Converts are numeric date into a string.
         input: m - a month in the range 1-12
         input: d - a day in the range 1-31
         output: a string like "December 24".
         Note: this function does not enforce calendar rules. It's happy to output
         impossible strings like "June 95" or "February 31"*/
+        public struct MonthDate
+        {
+            public string monthName;
+            public Months Month;
+            public int Day;
+        }
 
-
+        public static MonthDate currentDate = new()
+        {
+            monthName = currentDate.Month.ToString(),
+            Month = Months.January,
+            Day = 1
+        };
 
         public static void DateReport()
         {
             
             // month, day;
-            Console.WriteLine(monthName + Day + " \n" + MilesTravled);
+            Console.WriteLine(Month + Day + " \n" + MilesTravled);
         }
         public static void MilesRemaining()
         {
@@ -178,11 +188,10 @@ You can also use these shortcuts for commands:
         public static void MaybeRollBack()
         {
             if (DaysInMonth(Month) < Day)
-
             {
-                CurrentMonth =CurrentMonth+ 1;
-                
-                monthName = CurrentMonth.ToString();
+                Month = Month + 1;
+
+               String monthName = currentDate.Month.ToString();
                 Day = 1;
             }
 
@@ -226,7 +235,7 @@ You can also use these shortcuts for commands:
             
             int DaysTravled = +random.Next(MinDaysPerTravel, MaxDaysPerTravel);
             MilesTravled += RandomMilesTravled;
-            Console.WriteLine(monthName + " " + Day.ToString() + "\n" + MilesTravled +" Miles travled",Console.ForegroundColor);
+            Console.WriteLine(Month + " " + Day.ToString() + "\n" + MilesTravled +" Miles travled",Console.ForegroundColor);
             AdvanceGameClock(DaysTravled);
             Console.WriteLine(foodRemaning.ToString() + " lbs of food remaining ");
 
@@ -241,7 +250,7 @@ You can also use these shortcuts for commands:
             int DaysRested = random.Next(MinDaysPerRest, MaxDaysPerRest);
             HealthLevel += 1;
             AdvanceGameClock(DaysRested);
-            Console.WriteLine(Day.ToString()+" " + CurrentMonth.ToString(),Console.ForegroundColor + " " + MilesTravled);
+            Console.WriteLine(Day.ToString()+" " + Month.ToString(),Console.ForegroundColor + " " + MilesTravled);
             if (HealthLevel > 5)
             {
                 HealthLevel = 5;
@@ -269,7 +278,7 @@ You can also use these shortcuts for commands:
 
         public static void HandleStatus()
         {
-            Console.WriteLine(monthName + " " + Day.ToString() + "\n" + MilesTravled + " Miles travled");
+            Console.WriteLine(Month + " " + Day.ToString() + "\n" + MilesTravled + " Miles travled");
             Console.WriteLine(HealthLevel);
         }
 
@@ -336,7 +345,7 @@ You can also use these shortcuts for commands:
                 return true; 
            
            }
-            if (CurrentMonth == Months.December)
+            if (Month == Months.December)
             {
                 Console.WriteLine("\nWinter Has arrived causing animals to go into hybernation and leave you stranded unable to move your cart. \n You and your family freeze to death slowly and painfully.");
                 return true;
@@ -361,6 +370,7 @@ You can also use these shortcuts for commands:
             while (Playing == true)
             {
                 string Action = Console.ReadLine().ToLower();
+                T
 
                 //string.Compare(Action, "Travel", true) == 0
 
