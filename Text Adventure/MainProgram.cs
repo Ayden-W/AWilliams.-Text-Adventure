@@ -370,7 +370,6 @@ You can also use these shortcuts for commands:
             while (Playing == true)
             {
                 string Action = Console.ReadLine().ToLower();
-                T
 
                 //string.Compare(Action, "Travel", true) == 0
 
